@@ -1,0 +1,35 @@
+{
+  "name": "authentication",
+  "version": "1.0.0",
+  "description": "Lab: Class 11 - Authentication",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "watch": "nodemon index.js",
+    "test-watch": "jest --watchAll",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/steve-baldock-401-advanced-javascript/authentication.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/steve-baldock-401-advanced-javascript/authentication/issues"
+  },
+  "homepage": "https://github.com/steve-baldock-401-advanced-javascript/authentication#readme",
+  "dependencies": {
+    "@code-fellows/supergoose": "^1.0.11",
+    "base-64": "^0.1.0",
+    "bcrypt": "^5.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "jest": "^26.4.2",
+    "jsonwebtoken": "^8.4.0",
+    "mongoose": "^5.10.0",
+    "morgan": "^1.9.0"
+  }
+}

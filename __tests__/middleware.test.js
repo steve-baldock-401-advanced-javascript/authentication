@@ -1,7 +1,7 @@
 'use strict';
 
 require('@code-fellows/supergoose');
-const auth = require('../auth/middleware.js');
+const auth = require('./auth/middleware.js');
 const Users = require('../auth/users-model.js');
 process.env.SECRET = 'arrestthecopswhokilledbreonnataylor';
 
@@ -27,7 +27,7 @@ describe('Auth Middleware', () => {
       };
 
       let res = {};
-      let next = jest.fn();
+      let next = jest.fn(); // stub - ask what happens with usage of next function
 
       await auth(req, res, next);
       expect(next).toHaveBeenCalledWith(errorObject);

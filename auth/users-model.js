@@ -1,8 +1,10 @@
 'use strict';
 
+require('dotenv').config();
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const secret = process.env.SECRET;
 
 const users = new mongoose.Schema({
   username: { type: String, required: true },
@@ -12,49 +14,47 @@ const users = new mongoose.Schema({
   role: { type: String, required: false, default: 'user', enum: ['admin', 'editor', 'user'] },
 });
 
-// modify user instance before saving - only when password is changing
-users.pre('save', async function() {
-  if(this.isModified('password')) {
-    this.password = await bcrypt.hash(this.password, 10);
-  }
-});
 
-users.statics.authenticateBasic = function (username, password) {
+users.statics.authenticateBasic = async function (username, password) {
+
   let query = { username };
-  return this.findOne(query)
-    .then(user => user && user.comparePassword(password) )
-    .catch(console.error);
+
+  const user = await this.findOne(query);
+  return user && await user.comparePassword(password);
 };
 
-users.methods.comparePassword = function(plainPassword) {
-  return bcrypt.compare(plainPassword, this.password)
-    .then(valid => valid ? this : null)
-    .catch(console.error);
+users.methods.comparePassword = async function(plainPassword) {
+  const valid = await bcrypt.compare(plainPassword, this.password);
+  return valid ? this : null;
 };
 
-// users.methods.generateToken = function () {
+users.methods.generateToken = function () {
+  let token = {
+    id: this._id,
+    role: this.role,
+  };
+  return jwt.sign(token, secret );
+};
 
-// }
-
-let SECRET = 'arrestthecopswhokilledbreonnataylor';
-
-let db = {};
-
-// Because we're using async bcrypt, this function needs to return a value or a promise rejection
-users.save = async function (record) {
-  if(!db[record.username]) {
-    record.password = await bcrypt.hash(record.password, 5);
-
-    db[record.username] = record;
-
-    return record;
-  }
-  return Promise.reject();
+users.statics.createFromOauth = function (email) {
+  if(!email) {
+    return Promise.reject('Validation Error'); 
+  } 
+  return this.findOne({ email })
+    .then(user => {
+      if (!user) { throw new Error('User Not Found'); }
+      console.log('Welcome Back', user.username);
+      return user;
+    })
+    .catch(error => {
+      console.log('Creating new user');
+      let username = email;
+      let password = 'none';
+      return this.create({ username, password, email });
+    });
 };
 
 
-
-// users.list = () => db;
 
 
 

@@ -7,7 +7,7 @@
     "start": "node index.js",
     "watch": "nodemon index.js",
     "test-watch": "jest --watchAll",
-    "test": "jest"
+    "test": "jest --verbose"
   },
   "repository": {
     "type": "git",
@@ -30,6 +30,6 @@
     "jest": "^26.4.2",
     "jsonwebtoken": "^8.4.0",
     "mongoose": "^5.10.0",
-    "morgan": "^1.9.0"
+    "morgan": "^1.10.0"
   }
 }

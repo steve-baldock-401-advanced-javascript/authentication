@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auth Test</title>
+</head>
+<body>
+  <main>
+      <a id="oauth" href="#">Login</a>
+  </main>
+  
+  <script>
+
+    let url = "https://github.com/login/oauth/authorize";
+
+    let options = {
+      client_id: 'c2ebfb6ec76708c9e62d',
+      redirect_uri: 'http://localhost:3001/oauth',        scope: 'read:user',
+      state: '401appconset'
+    }
+
+    let queryString = Object.keys(options).map((key) => {
+      return `${key}=` + encodeURIComponent(options[key]);
+    }).join("&");
+
+    let authURL = `$(URL)?${QueryString}`;
+
+    let link = document.getElementByID('oauth');
+    link.setAttribute('href', authURL);
+  </script>
+
+</body>
+</html>

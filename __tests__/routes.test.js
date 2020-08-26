@@ -1,12 +1,13 @@
 'use strict';
 
-require('@code-fellows/supergoose');
-
+const supergoose = require('@code-fellows/supergoose');
 const server = require('../lib/server.js');
 const jwt = require('jsonwebtoken');
-const supergoose = require('@code-fellows/supergoose');
+// const routes = require('../auth/routes.js');
+
 
 const mockRequest = supergoose(server);
+
 
 describe('Auth Router', () => {
   describe('users signup/in', () => {

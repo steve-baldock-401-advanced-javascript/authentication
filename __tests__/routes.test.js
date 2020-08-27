@@ -1,25 +1,34 @@
 'use strict';
 
+require('dotenv').config();
 const supergoose = require('@code-fellows/supergoose');
-const server = require('../lib/server.js');
+const { server } = require('../lib/server.js');
 const jwt = require('jsonwebtoken');
 // const routes = require('../auth/routes.js');
 
 
 const mockRequest = supergoose(server);
 
+let users = {
+  admin: { username: 'admin', password: 'password', role: 'admin' },
+  editor: { username: 'editor', password: 'passwword', role: 'editor' },
+  user: { username: 'user', password: 'password', role: 'user' },
+};
+
 
 describe('Auth Router', () => {
-  describe('users signup/in', () => {
-    it('can sign up', async () => {
-      const userData = { username: 'admin', password: 'password', role: 'admin', email: 'admin@admin.com' };
+  Object.keys(users).forEach(userType => {
+    describe(`${userType} users`, () => {
+      it('can create one', async () => {
+        const results = await (await mockRequest.post('/signup')).setEncoding(users[userType]);
+        const token = jwt.verify(results.body.token, process.env.JWT_SECRET);
+        expect(token.role).toBe(userType);
+      });
 
-      const results = await (await mockRequest.post('/signup')).setEncoding(userData);
-
-      const token = jwt.verify(results.text, process.env.SECRET);
-
-      expect(token.id).toBeDefined();
     });
+  
+
+
 
     it('can signin with basic', async () => {
       const userData = { username: 'bob', password: 'password', role: 'admin', email: 'admin@admin.com' };
@@ -36,4 +45,6 @@ describe('Auth Router', () => {
   });
 
 });
+
+
 

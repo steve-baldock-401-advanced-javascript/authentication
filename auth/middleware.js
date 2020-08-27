@@ -2,7 +2,7 @@
 
 const base64 = require('base-64');
 
-const users = require('./users-model.js');
+const User = require('./users-model.js');
 
 module.exports = async (req, res, next) => {
 
@@ -24,9 +24,9 @@ module.exports = async (req, res, next) => {
 
   // Is this user okay?
   try {
-    const validUser = await users.authenticateBasic(user, pass);
+    const validUser = await User.authenticateBasic(user, pass);
 
-    req.token = users.validUser.generateToken(validUser);
+    req.token = User.validUser.generateToken(validUser);
     req.user = user;
     next();
   } catch (err) {

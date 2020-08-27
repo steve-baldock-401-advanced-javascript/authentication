@@ -3,16 +3,16 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../auth/middleware.js')
-const users = require('./users-model.js');
+const User = require('./users-model.js');
 const oauth = require('../middleware/oauth.js');
 
-router.post('/signup', (req, res, next) => {
+router.post('/signup', async (req, res, next) => {
   // create new user
   // save it
   // add to response -> ???
 
 
-  const user = new users(req.body);
+  const user = await User.create(req.body);
 
   user.save()
     .then(user => {
@@ -26,15 +26,18 @@ router.post('/signup', (req, res, next) => {
 });
 
 router.post('/signin', auth, (req, res, next) => {
-  // response sends back token, user, 
   res.cookie('auth', req.token);
-  res.send(req.token);
+  res.set(req.token);
+
+  res.send( {
+    token: req.token,
+    user: req.user,
+  });
 });
 
-router.get();
 
 router.get('/oauth', oauth, (req, res, next) => {
-  // new route to the auth router
+  res.status(200).send(req.token);
 });
 
 module.exports = router;

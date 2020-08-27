@@ -4,59 +4,58 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const secret = process.env.SECRET;
+const secret = process.env.JWT_SECRET;
 
 const users = new mongoose.Schema({
   username: { type: String, required: true },
   password: { type: String, required: true},
-  email: { type: String, required: false},
-  fullname: { type: String, required: false}, 
+  email: { type: String },
+  fullname: { type: String }, 
   role: { type: String, required: false, default: 'user', enum: ['admin', 'editor', 'user'] },
 });
 
+users.pre('save', async function () {
+  if(this.isModified('password')) {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+});
 
+// Check if there is a user with that username and password
 users.statics.authenticateBasic = async function (username, password) {
 
   let query = { username };
 
   const user = await this.findOne(query);
-  return user && await user.comparePassword(password);
+  // first needs to be truthy in order to move on to second and return function below
+  return user &&  await user.comparePassword(password);
 };
 
 users.methods.comparePassword = async function(plainPassword) {
-  const valid = await bcrypt.compare(plainPassword, this.password);
-  return valid ? this : null;
+  const passwordMatch = await bcrypt.compare(plainPassword, this.password);
+  return passwordMatch ? this : null;
 };
 
-users.methods.generateToken = function () {
-  let token = {
+users.methods.generateToken =  async function () {
+  const token = {
     id: this._id,
     role: this.role,
   };
-  return jwt.sign(token, secret );
+   
+  return jwt.sign(token, secret);
 };
 
-users.statics.createFromOauth = function (email) {
+users.statics.createFromOauth = async function (email) {
   if(!email) {
     return Promise.reject('Validation Error'); 
   } 
-  return this.findOne({ email })
-    .then(user => {
-      if (!user) { throw new Error('User Not Found'); }
-      console.log('Welcome Back', user.username);
-      return user;
-    })
-    .catch(error => {
-      console.log('Creating new user');
-      let username = email;
-      let password = 'none';
-      return this.create({ username, password, email });
-    });
+
+  const user = await this.findOne({ email });
+  if(user) {
+    return user;
+  } else {
+    return this.create({ username: email, password: 'none', email: email });
+  }
 };
-
-
-
-
 
 module.exports = mongoose.model('users', users);
 

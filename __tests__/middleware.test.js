@@ -1,17 +1,17 @@
 'use strict';
 
 require('@code-fellows/supergoose');
-const auth = require('./auth/middleware.js');
+const auth = require('../auth/middleware.js');
 const Users = require('../auth/users-model.js');
-process.env.SECRET = 'arrestthecopswhokilledbreonnataylor';
+const secret = process.env.JWT_SECRET;
 
 
-beforeAll(async (done) => {
+beforeEach(async (done) => {
   await new Users({ username: 'admin', password: 'password', role: 'admin', email: 'admin@admin.com' }).save();
   done();
 });
 
-describe('Auth Middleware', () => {
+describe('user authentication', () => {
   let errorObject = {'message': 'Invalid User ID/Password', 'status': 401, 'statusMessage': 'Unauthorized'};
 
   describe('user authentication', () => {

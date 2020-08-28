@@ -41,7 +41,7 @@ async function exchangeCodeForToken(code) {
 
   let access_token = tokenResponse.body.access_token;
 
-  return access_token;
+  return access_token; 
 
 }
 

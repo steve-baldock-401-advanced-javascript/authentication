@@ -2,7 +2,7 @@
 
 const base64 = require('base-64');
 
-const User = require('./users-model.js');
+const User = require('../auth/users-model.js');
 
 module.exports = async (req, res, next) => {
 
@@ -16,7 +16,6 @@ module.exports = async (req, res, next) => {
   // Pull out just the encoded part by splitting the header into an array on the space and popping off the 2nd element
 
   let encodedPair = req.headers.authorization.split(' ').pop();
-
 
   // decodes to user:pass and splits into an array
   const decoded = base64.decode(encodedPair);

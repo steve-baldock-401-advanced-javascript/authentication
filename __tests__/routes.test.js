@@ -21,27 +21,25 @@ describe('Auth Router', () => {
     describe(`${userType} users`, () => {
       it('can create one', async () => {
         const results = await (await mockRequest.post('/signup')).setEncoding(users[userType]);
+        expect(results.body.user).toBeDefined();
+        expect(results.body.token).toBeDefined();
         const token = jwt.verify(results.body.token, process.env.JWT_SECRET);
+        expect(token.role).toBe(userType);
+      });
+      
+      it('can signin with basic', async () => {
+        const { username } = users[userType];
+        const { password } = users[userType];
+  
+        const results = await (await mockRequest.post('/signin')).auth(username, password);
+  
+        const token = jwt.verity(results.body.token, process.env.SECRET);
+  
         expect(token.role).toBe(userType);
       });
 
     });
   
-
-
-
-    it('can signin with basic', async () => {
-      const userData = { username: 'bob', password: 'password', role: 'admin', email: 'admin@admin.com' };
-
-      await (await mockRequest.post('/signup')).send(userData);
-
-      const results = await (await mockRequest.post('/signin')).auth('joey', 'password');
-
-      const token = jwt.verity(results.text, process.env.SECRET);
-
-      expect(token).toBeDefined();
-    });
-
   });
 
 });

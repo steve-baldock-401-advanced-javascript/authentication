@@ -14,11 +14,25 @@ const users = new mongoose.Schema({
   role: { type: String, required: false, default: 'user', enum: ['admin', 'editor', 'user'] },
 });
 
+let db = {};
+
+
 users.pre('save', async function () {
   if(this.isModified('password')) {
     this.password = await bcrypt.hash(this.password, 10);
   }
 });
+
+users.save = async function (record) {
+  if(!db[record.username]) {
+    record.password = await bcrypt.hash(record.password, 5);
+    db[record.username] = record;
+    return record;
+  }
+
+  return Promise.reject();
+
+};
 
 // Check if there is a user with that username and password
 users.statics.authenticateBasic = async function (username, password) {

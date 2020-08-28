@@ -2,16 +2,14 @@
 
 const express = require('express');
 const router = express.Router();
-const auth = require('../auth/middleware.js')
+const basicAuth = require('../middleware/basic-middleware.js');
 const User = require('./users-model.js');
-const oauth = require('../middleware/oauth.js');
+const oauth = require('../middleware/oauth-middleware.js');
+const bearerAuth = require('../middleware/bearer-auth-middleware.js');
 
+// This needs to accept either JSON for FORM data with username and password keys. Does it?
 router.post('/signup', async (req, res, next) => {
-  // create new user
-  // save it
-  // add to response -> ???
-
-
+  
   const user = await User.create(req.body);
 
   user.save()
@@ -25,7 +23,7 @@ router.post('/signup', async (req, res, next) => {
     });
 });
 
-router.post('/signin', auth, (req, res, next) => {
+router.post('/signin', basicAuth, (req, res, next) => {
   res.cookie('auth', req.token);
   res.set(req.token);
 
@@ -35,25 +33,14 @@ router.post('/signin', auth, (req, res, next) => {
   });
 });
 
+router.get('/users', bearerAuth, (req, res) => {
+  res.status(200).json(req.user);
+});
 
-router.get('/oauth', oauth, (req, res, next) => {
+router.get('/oauth', oauth, (req, res) => {
   res.status(200).send(req.token);
 });
 
+
 module.exports = router;
-
-
-
-  
-
-  
-// Create GET route for /users that returns a JSON object
-// get(id) {
-//   if (id) {
-//     return this.schema.findById(id);
-//   }
-//   else {
-//     return this.schema.find({});
-//   }
-// }
  

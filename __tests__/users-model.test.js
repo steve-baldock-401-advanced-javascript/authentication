@@ -24,7 +24,7 @@ it('should save hashed password', async () => {
 
 it('should authenticate known user', async () => {
   await new User(fakeUser).save();
-  const authenticatedUser = await User.authenticateBasic(fakeUser.username, fakeUser);
+  const authenticatedUser = await User.authenticateBasic(fakeUser.username, fakeUser.password);
   expect(authenticatedUser).toBeDefined();
 });
 
@@ -60,15 +60,16 @@ it('should generate a token', async () => {
 });
 
 it('creating an existing user return user', async () => {
-  const user = await new User(fakeUser).save();
-  const foundOrCreated = await User.createFromOauth(user.email);
+  const user = await new User.create(fakeUser);
+  const foundOrCreated = await User.createFromOauth(user.username);
+  expect(foundOrCreated.username).toBe(user.username);
   expect(foundOrCreated.email).toBe(user.email);
   expect(foundOrCreated.password).toBe(user.password);
 });
 
-it('creating with email returns new user if not present', async () => {
-  const foundOrCreated = await User.createFromOauth('new@new.com');
-  expect(foundOrCreated.email).toBe('new@new.com');
+it('creating from OAuth returns new user if not present', async () => {
+  const foundOrCreated = await User.createFromOauth('newguy');
+  expect(foundOrCreated.username).toBe('newguy');
   expect(foundOrCreated.password).not.toBe('none');
 });
 

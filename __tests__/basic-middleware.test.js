@@ -20,9 +20,6 @@ describe('user authentication', () => {
   let errorObject = {'message': 'Invalid User ID/Password', 'status': 401, 'statusMessage': 'Unauthorized'};
 
 
-    
-  // let cachedToken;
-
   it('it fails a login for a user (admin) with the incorrect basic credentials', async () => {
 
     let req = {

@@ -33,13 +33,14 @@ router.post('/signin', basicAuth, (req, res, next) => {
   });
 });
 
+router.get('/oauth', oauth, (req, res) => {
+  res.status(200).send(req.token);
+});
+
 router.get('/users', bearerAuth, (req, res) => {
   res.status(200).json(req.user);
 });
 
-router.get('/oauth', oauth, (req, res) => {
-  res.status(200).send(req.token);
-});
 
 
 module.exports = router;

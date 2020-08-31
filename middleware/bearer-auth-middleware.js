@@ -1,17 +1,28 @@
 'use strict';
 
-const users = require('../auth/users-model.js');
+const User = require('../auth/users-model.js');
 
-module.exports = (req, res, next) => {
+module.exports = async (req, res, next) => {
 
   if (!req.headers.authorization) { next('Invalid Login'); return; }
 
   let token = req.headers.authorization.split(' ').pop();
 
-  users.authenticationToken(token)
-    .then(validUser => {
-      req.user = validUser;
-      next();
-    })
-    .catch(err => next('Invalid Login'));
+  try {
+
+    const validUser = await User.authenticateToken(token);
+
+    req.user = validUser;
+
+    req.user = {
+      username: validUser.username,
+      fullname: validUser.fullname,
+      email: validUser.email,
+      capabilities: validUser.capabilities,
+    };
+
+    next();
+  } catch(err) {
+    next('Invalid Login');
+  }
 };
